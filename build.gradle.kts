@@ -11,10 +11,18 @@ repositories {
     mavenCentral()
 }
 dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.7.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation(kotlin("test-junit5"))
 }
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "13"
+    kotlinOptions.jvmTarget = "11"
 }
 application {
     mainClassName = "MainKt"
