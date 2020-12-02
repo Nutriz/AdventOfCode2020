@@ -1,3 +1,3 @@
 fun main(args: Array<String>) {
-    println("Hello World!")
+    // All solutions are in test folder "src/test/kotlin"
 }
