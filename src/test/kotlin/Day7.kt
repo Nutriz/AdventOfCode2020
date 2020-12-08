@@ -13,7 +13,6 @@ class Day7 {
             fun `assert sum of shiny gold bags is 4`() {
                 val bags = exampleInput.asBags()
                 val sum = bags.keys.sumBy { bagName ->
-//            println("loop $bagName")
                     if (isShinyInside(bagName, bags)) 1 else 0
                 }
                 assertEquals(4, sum)
@@ -25,40 +24,78 @@ class Day7 {
             @Test
             fun `sum of shiny gold bags`() {
                 val bags = realInput.asBags()
-                val sum = bags.keys.sumBy { bagName ->
-                    if (isShinyInside(bagName, bags)) 1 else 0
+                val sum = bags.keys.sumBy { bag ->
+                    if (isShinyInside(bag, bags)) 1 else 0
                 }
                 println("Part A: $sum")
             }
         }
     }
 
-    fun isShinyInside(bagName: String, bags: HashMap<String, List<String>>): Boolean {
-        println("next bag name: $bagName")
-        val children = bags[bagName]
-        return if (children?.any { child -> child == "shiny gold" } == true) {
+//    @Nested
+//    inner class PartB {
+//
+//        @Nested
+//        inner class `Example data` {
+//            @Test
+//            fun `assert sum of shiny gold contained bags is 32`() {
+//                val bags = exampleInput.asBags()
+//                val children = bags["shiny gold"]!!
+//                countBagsInShinyGold(children, bags)
+//                assertEquals(32, sum)
+//            }
+//        }
+//
+//        @Nested
+//        inner class `Real data` {
+//            @Test
+//            fun `sum of shiny gold bags`() {
+//                val bags = realInput.asBags()
+//                val sum = bags.keys.sumBy { bag ->
+//                    if (isShinyInside(bag, bags)) 1 else 0
+//                }
+//                println("Part A: $sum")
+//            }
+//        }
+//    }
+
+//    fun countBagsInShinyGold(bag: List<Bag>, bags: HashMap<String, List<Bag>>): Boolean {
+//        println("next bag name: $bag")
+//        val children: List<Bag>? = bags[bag]
+//        children?.sumBy { bag ->
+//            bag.count
+//        }
+//    }
+
+    fun isShinyInside(bag: String, bags: HashMap<String, List<Bag>>): Boolean {
+        println("next bag name: $bag")
+        val children: List<Bag>? = bags[bag]
+        return if (children?.any { child -> child.name == "shiny gold" } == true) {
             println(" ** shiny found **")
             true
         } else {
             println("no shiny found, go deeper")
             children?.any { child ->
-                isShinyInside(child, bags)
+                isShinyInside(child.name, bags)
             } == true
         }
     }
 
-//    data class Bag(val name: String, val childrenBags: List<Bag> = emptyList(), var count: Int = 1)
+    data class Bag(val name: String, var count: Int = 1)
 
-    fun String.asBags(): HashMap<String, List<String>> {
-        val bags = hashMapOf<String, List<String>>()
+    fun String.asBags(): HashMap<String, List<Bag>> {
+        val bags = hashMapOf<String, List<Bag>>()
         lines().filterNot { it.endsWith("no other bags.") }
             .filterNot { it.startsWith("shiny gold") }
             .forEach { line ->
                 val (bagName, children) = line.split(" bags contain ")
                 val childrenList = children.dropLast(1)
                     .split(", ")
-                    .map { bag -> bag.drop(2) }
                     .map { it.replace(" bags", "").replace(" bag", "") }
+                    .map { bag ->
+                        val count = bag.first().toString().toInt()
+                        Bag(bag.drop(2), count)
+                    }
                 bags += bagName to childrenList
             }
         return bags
