@@ -1,4 +1,3 @@
-import Day6.Companion.exampleInput
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -27,67 +26,33 @@ class Day7 {
             fun `sum of shiny gold bags`() {
                 val bags = realInput.asBags()
                 val sum = bags.keys.sumBy { bagName ->
-//            println("loop $bagName")
                     if (isShinyInside(bagName, bags)) 1 else 0
                 }
                 println("Part A: $sum")
             }
         }
     }
-//
-//    @Nested
-//    inner class PartB {
-//
-//        @Nested
-//        inner class `Example data` {
-//
-//            @Test
-//            fun `assert sum of unique Yes answers but same is 6`() {
-//            val sameAnswerSum = exampleInput.asGroups()
-//                .sumBy { group ->
-//                    countSameYesInGroup(group)
-//                }
-//                assertEquals(6, sameAnswerSum)
-//            }
-//        }
-//
-//        @Nested
-//        inner class `Real data` {
-//            @Test
-//            fun `assert sum of unique Yes answers but same`() {
-//                val sameAnswerSum = realInput.asGroups()
-//                    .sumBy { group ->
-//                        countSameYesInGroup(group)
-//                    }
-//                println("Part B: $sameAnswerSum")
-//            }
-//        }
-//    }
-//
+
     fun isShinyInside(bagName: String, bags: HashMap<String, List<String>>): Boolean {
         println("next bag name: $bagName")
-
         val children = bags[bagName]
-        if (children?.any { child -> child == "shiny gold" } == true) {
+        return if (children?.any { child -> child == "shiny gold" } == true) {
             println(" ** shiny found **")
-            return true
+            true
         } else {
             println("no shiny found, go deeper")
-            children?.forEach { child ->
-                return isShinyInside(child, bags)
-            }
+            children?.any { child ->
+                isShinyInside(child, bags)
+            } == true
         }
-        return false
     }
 
 //    data class Bag(val name: String, val childrenBags: List<Bag> = emptyList(), var count: Int = 1)
 
     fun String.asBags(): HashMap<String, List<String>> {
         val bags = hashMapOf<String, List<String>>()
-
         lines().filterNot { it.endsWith("no other bags.") }
             .filterNot { it.startsWith("shiny gold") }
-            .also { println("size ${it.size}") }
             .forEach { line ->
                 val (bagName, children) = line.split(" bags contain ")
                 val childrenList = children.dropLast(1)
@@ -98,6 +63,7 @@ class Day7 {
             }
         return bags
     }
+
     companion object {
         val exampleInput =
 """light red bags contain 1 bright white bag, 2 muted yellow bags.
