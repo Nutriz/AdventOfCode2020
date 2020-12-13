@@ -166,25 +166,87 @@ class Day8 {
         }
     }
 
-//    @Nested
-//    inner class PartB {
-//
-//        @Nested
-//        inner class `Example data` {
-//
-//            @Test
-//            fun `assert sum of unique Yes answers but same is 6`() {
-//            }
-//        }
-//
-//        @Nested
-//        inner class `Real data` {
-//            @Test
-//            fun `assert sum of unique Yes answers but same`() {
-//            }
-//        }
-//    }
+    @Nested
+    inner class PartB {
 
+        @Nested
+        inner class `Example data` {
+            @Test
+
+            fun `assert acc is 8 at the end of the program`() {
+                val opSetUnmodified = opsExample.toList()
+                opSetUnmodified.forEachIndexed { line, op ->
+                    acc = 0
+                    pos = 0
+                    val flippedOp = if (op.code != "acc") {
+                        Op(if (op.code == "nop") "jmp" else "nop", op.argument)
+                    } else {
+                        op
+                    }
+
+                    println("$line: $op => $flippedOp")
+
+                    val opsFlipped: MutableList<Pair<Int, Op>> = opsExample.mapIndexed { index, opp ->
+                        if (index == line) index to flippedOp else index to opp
+                    }.toMutableList()
+
+                    val opsExecuted = mutableListOf<Pair<Int, Op>>()
+                    while (pos != opsFlipped.size) {
+                        val currOp: Pair<Int, Op> = opsFlipped[pos]
+                        if (currOp in opsExecuted)
+                            break
+                        opsExecuted += currOp
+                        move(currOp.second)
+                        println("next pos:$pos")
+                    }
+
+                    if (pos == opsFlipped.size) {
+                        println("Program END")
+                        assertEquals(8, acc)
+                        return
+                    }
+                }
+            }
+        }
+
+        @Nested
+        inner class `Real data` {
+            @Test
+            fun `find acc value when program finish`() {
+                val opSetUnmodified = opsReal.toList()
+                opSetUnmodified.forEachIndexed { line, op ->
+                    acc = 0
+                    pos = 0
+                    val flippedOp = if (op.code != "acc") {
+                        Op(if (op.code == "nop") "jmp" else "nop", op.argument)
+                    } else {
+                        op
+                    }
+
+                    println("$line: $op => $flippedOp")
+
+                    val opsFlipped: MutableList<Pair<Int, Op>> = opsReal.mapIndexed { index, opp ->
+                        if (index == line) index to flippedOp else index to opp
+                    }.toMutableList()
+
+                    val opsExecuted = mutableListOf<Pair<Int, Op>>()
+                    while (pos != opsFlipped.size) {
+                        val currOp: Pair<Int, Op> = opsFlipped[pos]
+                        if (currOp in opsExecuted)
+                            break
+                        opsExecuted += currOp
+                        move(currOp.second)
+                        println("next pos:$pos")
+                    }
+
+                    if (pos == opsFlipped.size) {
+                        println("Program END, acc: $acc")
+                        return
+                    }
+                }
+            }
+        }
+    }
 
     companion object {
         val exampleInput =
